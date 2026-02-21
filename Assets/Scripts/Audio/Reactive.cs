@@ -8,46 +8,47 @@ public class Reactive : MonoBehaviour
     // Col = sphere id
     // Example: startPositions[1, 25] -> sphere 25 start position in 10-20s segment
 
-    GameObject[] spheres;
-    static int numSphere = 300;
+    GameObject[] cubes;
+    static int numObjects = 300;
     int segmentCount;
     Vector3[,] startPositions;
 
     Vector3[,] endPositions;
     float[] timeFlags;
+    float transitionTime = 0;
 
 
     void Start()
 
     {
 
-        timeFlags = new float[] { 0f, 12f, 50f, 75f, 114f, 138f, 161f };
+        timeFlags = new float[] { 0f, 11f, 12f, 50f, 75f, 114f, 138f, 161f };
 
         segmentCount = timeFlags.Length - 1;
 
-        spheres = new GameObject[numSphere];
+        cubes = new GameObject[numObjects];
 
-        startPositions = new Vector3[segmentCount, numSphere];
+        startPositions = new Vector3[segmentCount, numObjects];
 
-        endPositions = new Vector3[segmentCount, numSphere];
+        endPositions = new Vector3[segmentCount, numObjects];
 
 
-        for (int i = 0; i < numSphere; i++)
+        for (int i = 0; i < numObjects; i++)
 
         {
-            float t = i * 2 * Mathf.PI / numSphere;
+            float t = i * 2 * Mathf.PI / numObjects;
             float r = 3f;
 
             // Segment 0 : 0s -> 12s
 
-            startPositions[0, i] = new Vector3(r * t - r * Mathf.PI, Mathf.Sin(r * t * Mathf.Cos(t) + Time.time));
+            startPositions[0, i] = new Vector3(r * t - r * Mathf.PI, Mathf.Sin(r * t * Mathf.Cos(t) + 11f));
 
-            endPositions[0, i] = Vector3.one;
+            endPositions[0, i] = new Vector3(-r * Mathf.Sin(t), -r * Mathf.Cos(t));
 
 
             // Segment 1 & 3: 12s -> 50s     1:15s -> 1:54s
 
-            startPositions[1, i] = Vector3.one;
+            startPositions[1, i] = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t));
 
             endPositions[1, i] = Vector3.one;
 
@@ -72,21 +73,22 @@ public class Reactive : MonoBehaviour
 
         }
 
-        for (int i = 0; i < numSphere; i++)
+        for (int i = 0; i < numObjects; i++)
         {
             // Draw primitive elements:
             // https://docs.unity3d.com/6000.0/Documentation/ScriptReference/GameObject.CreatePrimitive.html
-            spheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cubes[i] = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
             // Position
-            spheres[i].transform.position = startPositions[0, i];
-            spheres[i].transform.localScale = Vector3.one * 0.3f;
+            cubes[i].transform.position = startPositions[0, i];
+            cubes[i].transform.localScale = Vector3.one * 0.3f;
             // Color
             // Get the renderer of the spheres and assign colors.
-            Renderer sphereRenderer = spheres[i].GetComponent<Renderer>();
+            Renderer sphereRenderer = cubes[i].GetComponent<Renderer>();
             // HSV color space: https://en.wikipedia.org/wiki/HSL_and_HSV
-            float hue = (float)i / numSphere; // Hue cycles through 0 to 1
-            Color color = Color.HSVToRGB(hue, 1f, 1f); // Full saturation and brightness
+            //float hue = (float)i / numObjects; // Hue cycles through 0 to 1
+            float hue = 0.6f;
+            Color color = Color.HSVToRGB(hue, (float)i / numObjects / 2f + 0.5f, 1f); // Full saturation and brightness
             sphereRenderer.material.color = color;
         }
 
@@ -99,29 +101,46 @@ public class Reactive : MonoBehaviour
     {
         float currentTime = Time.time;
 
-        for (int i = 0; i < numSphere; i++)
+        for (int i = 0; i < numObjects; i++)
         {
-            float t = i * 2 * Mathf.PI / numSphere;
+            float t = i * 2 * Mathf.PI / numObjects;
 
             if (currentTime < timeFlags[1])         //Segment 0
             {
                 float r = 3f;
-                spheres[i].transform.position = new Vector3(r * t - r * Mathf.PI, Mathf.Sin(r * t * Mathf.Cos(t) + Time.time));
-                spheres[i].transform.localScale = new Vector3(0.3f, 0.3f, 0.3f); 
-            }
-            //Add lerp transition
+                cubes[i].transform.position = new Vector3(r * t - r * Mathf.PI, Mathf.Sin(r * t * Mathf.Cos(t) + Time.time));
+                
+                
+                Renderer sphereRenderer = cubes[i].GetComponent<Renderer>();
+                Color color = sphereRenderer.material.color;
+                Color.RGBToHSV(color, out float h, out _, out float v);
+                float s = Mathf.Sin(t + Time.time) / 4f + 0.75f;
+                color = Color.HSVToRGB(h, s, v);
+                sphereRenderer.material.color = color;
 
-            else if (currentTime < timeFlags[2] || currentTime < timeFlags[4])    //Segment 1 & 3
+                //audioreactive sizing
+                cubes[i].transform.localScale = new Vector3(0.3f, 0.3f, 0.3f); 
+            }
+
+            //lerp transition
+            else if (currentTime < timeFlags[2])
+            {
+                cubes[i].transform.position = Vector3.Lerp(startPositions[0,i], endPositions[0,i], transitionTime);
+            }
+
+            else if (currentTime < timeFlags[3] || currentTime < timeFlags[5])    //Segment 1 & 3
+            {
+                float r = 3f;
+                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t + Time.time), r * Mathf.Cos(t + Time.time));
+
+            }
+
+            else if (currentTime < timeFlags[4] || currentTime < timeFlags[6])    //Segment 2
             {
 
             }
 
-            else if (currentTime < timeFlags[3] || currentTime < timeFlags[5])    //Segment 2
-            {
-
-            }
-
-            else if (currentTime < timeFlags[6])    //Segment 5
+            else if (currentTime < timeFlags[7])    //Segment 5
             {
 
             }
@@ -130,6 +149,11 @@ public class Reactive : MonoBehaviour
             {
 
             }
+        }
+
+        if (currentTime < timeFlags[2] && currentTime > timeFlags[1])
+        {
+            transitionTime += Time.deltaTime;
         }
 
     }
