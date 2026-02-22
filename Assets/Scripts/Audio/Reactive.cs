@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Reactive : MonoBehaviour
@@ -9,13 +8,14 @@ public class Reactive : MonoBehaviour
     // Example: startPositions[1, 25] -> sphere 25 start position in 10-20s segment
 
     GameObject[] cubes;
-    static int numObjects = 300;
+    public static int numObjects = 500;
     int segmentCount;
     Vector3[,] startPositions;
 
     Vector3[,] endPositions;
     float[] timeFlags;
-    float transitionTime = 0;
+    float audioTime = 0f;
+    float transitionTime = 0f;
 
 
     void Start()
@@ -99,40 +99,51 @@ public class Reactive : MonoBehaviour
     void Update()
 
     {
+        audioTime += Time.deltaTime * Spectrum.audioAmp;
         float currentTime = Time.time;
+        float scale = 20f;
 
         for (int i = 0; i < numObjects; i++)
         {
             float t = i * 2 * Mathf.PI / numObjects;
+            float amp = Mathf.Max(Spectrum.samples[Spectrum.mappedMelBins[i / 5]] * scale * scale, 0.3f);
+            //amp = Mathf.Min(7f, amp);
 
             if (currentTime < timeFlags[1])         //Segment 0
             {
                 float r = 3f;
-                cubes[i].transform.position = new Vector3(r * t - r * Mathf.PI, Mathf.Sin(r * t * Mathf.Cos(t) + Time.time));
+                cubes[i].transform.position = new Vector3(r * t - r * Mathf.PI, Mathf.Sin(r * t * Mathf.Cos(t) + currentTime));
                 
                 
                 Renderer sphereRenderer = cubes[i].GetComponent<Renderer>();
                 Color color = sphereRenderer.material.color;
                 Color.RGBToHSV(color, out float h, out _, out float v);
-                float s = Mathf.Sin(t + Time.time) / 4f + 0.75f;
+                float s = Mathf.Sin(t + currentTime) / 4f + 0.75f;
                 color = Color.HSVToRGB(h, s, v);
                 sphereRenderer.material.color = color;
 
                 //audioreactive sizing
-                cubes[i].transform.localScale = new Vector3(0.3f, 0.3f, 0.3f); 
+                //amp = Mathf.Max(Spectrum.samples[Spectrum.mappedMelBins[i / 5]] * scale * scale, 0.3f);
+                cubes[i].transform.localScale = new Vector3(0.2f, amp, 0.2f); 
             }
 
             //lerp transition
             else if (currentTime < timeFlags[2])
             {
                 cubes[i].transform.position = Vector3.Lerp(startPositions[0,i], endPositions[0,i], transitionTime);
+                cubes[i].transform.localScale = Vector3.one * 0.2f;
             }
 
             else if (currentTime < timeFlags[3] || currentTime < timeFlags[5])    //Segment 1 & 3
             {
                 float r = 3f;
-                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t + Time.time), r * Mathf.Cos(t + Time.time));
-
+                //cubes[i].transform.position = new Vector3(r * Mathf.Sin(t + audioTime), r * Mathf.Cos(t + audioTime));
+                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t));
+                //cubes[i].transform.Rotate(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
+                //cubes[i].transform.Rotate(0, 0, (float)i / numObjects * 360f);
+                Color color = Color.HSVToRGB(1f, 1f, 1f);
+                amp = Mathf.Log(amp, 2);
+                cubes[i].transform.localScale = new Vector3(0.2f, amp, 0.2f);
             }
 
             else if (currentTime < timeFlags[4] || currentTime < timeFlags[6])    //Segment 2
