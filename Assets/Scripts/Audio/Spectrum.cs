@@ -1,9 +1,6 @@
 // Unity Audio Spectrum data analysis
 // IMDM Course Material 
 // Author: Myungin Lee
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent (typeof(AudioSource))]
@@ -14,6 +11,7 @@ public class Spectrum : MonoBehaviour
     public static int FFTSIZE = 4096; // https://en.wikipedia.org/wiki/Fast_Fourier_transform
     public static float[] samples = new float[FFTSIZE];
     public static float audioAmp = 0f;
+    public static float bassAmp = 0f;
     public int displayBins = 100;
     public static int[] mappedMelBins;
     float nyquist, hzPerBin;
@@ -52,6 +50,12 @@ public class Spectrum : MonoBehaviour
         for (int i = 0; i < FFTSIZE; i++)
         {
             audioAmp += samples[i];
+        }
+
+        bassAmp = 0f;
+        for (int i = 0; i < FFTSIZE / 4; i++)
+        {
+            bassAmp += samples[i];
         }
     }
 

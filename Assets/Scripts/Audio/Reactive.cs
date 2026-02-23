@@ -9,16 +9,19 @@ public class Reactive : MonoBehaviour
 
     GameObject[] cubes;
     public static int numObjects = 500;
-    public static GameObject mainCamera;
+    public GameObject mainCamera;
+    public AudioSource song;
+    public float skipTime = 0f;
+    public Material translucentMaterial;
     int segmentCount;
     Vector3[,] startPositions;
-
     Vector3[,] endPositions;
     float[] timeFlags;
     float audioTime = 0f;
     float transition1Time = 0f;
     bool transtion1 = true;
     bool segment2 = true;
+    GameObject centerSphere;
 
 
     void Start()
@@ -35,6 +38,7 @@ public class Reactive : MonoBehaviour
 
         endPositions = new Vector3[segmentCount, numObjects];
 
+        song.time = skipTime;
 
         for (int i = 0; i < numObjects; i++)
 
@@ -51,7 +55,7 @@ public class Reactive : MonoBehaviour
 
             // Segment 1 & 3: 12s -> 50s     1:15s -> 1:54s
 
-            startPositions[1, i] = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t));
+            startPositions[1, i] = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t), 5f);
 
             endPositions[1, i] = Vector3.one;
 
@@ -88,11 +92,13 @@ public class Reactive : MonoBehaviour
             // Color
             // Get the renderer of the spheres and assign colors.
             Renderer sphereRenderer = cubes[i].GetComponent<Renderer>();
+            //sphereRenderer.material = translucentMaterial;
             // HSV color space: https://en.wikipedia.org/wiki/HSL_and_HSV
             //float hue = (float)i / numObjects; // Hue cycles through 0 to 1
             float hue = 0.6f;
             Color color = Color.HSVToRGB(hue, (float)i / numObjects / 2f + 0.5f, 1f); // Full saturation and brightness
             sphereRenderer.material.color = color;
+            
         }
 
 
@@ -103,14 +109,13 @@ public class Reactive : MonoBehaviour
 
     {
         audioTime += Time.deltaTime * Spectrum.audioAmp;
-        float currentTime = Time.time;
+        float currentTime = skipTime + Time.time;
         float scale = 20f;
 
         for (int i = 0; i < numObjects; i++)
         {
             float t = i * 2 * Mathf.PI / numObjects;
-            float amp = Mathf.Max(Spectrum.samples[Spectrum.mappedMelBins[i / 5]] * scale * scale, 0.3f);
-            //amp = Mathf.Min(7f, amp);
+            float amp = Mathf.Max(Spectrum.samples[Spectrum.mappedMelBins[i * 3 / 20 + 25]] * scale * scale, 0.3f);
 
             if (currentTime < timeFlags[1])         //Segment 0
             {
@@ -122,8 +127,7 @@ public class Reactive : MonoBehaviour
                 Color color = sphereRenderer.material.color;
                 Color.RGBToHSV(color, out float h, out _, out float v);
                 float s = Mathf.Sin(t + currentTime) / 4f + 0.75f;
-                color = Color.HSVToRGB(h, s, v);
-                sphereRenderer.material.color = color;
+                sphereRenderer.material.color = Color.HSVToRGB(h, s, v);
 
                 //audioreactive sizing
                 //amp = Mathf.Max(Spectrum.samples[Spectrum.mappedMelBins[i / 5]] * scale * scale, 0.3f);
@@ -142,25 +146,32 @@ public class Reactive : MonoBehaviour
                 cubes[i].transform.localScale = new Vector3(0.2f, amp, 0.2f); 
             }
 
-            else if (currentTime < timeFlags[3] || currentTime < timeFlags[5])    //Segment 1 & 3
+            else if (currentTime < timeFlags[3] || (currentTime < timeFlags[5] && currentTime > timeFlags[4]))    //Segment 1 & 3
             {
                 if (segment2)
                 {
                     cubes[i].transform.rotation = Quaternion.Euler(0, 0, (float)i / numObjects * -360f);
                     //cubes[i].transform.Rotate(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
-                    if (i == numObjects - 1) segment2 = false;
+                    
+                    if (i == numObjects - 1) 
+                    {
+                        centerSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        centerSphere.transform.position = Vector3.forward * 5f;
+                        segment2 = false;
+                    }
                 }
-                //cubes[i].transform.position = new Vector3(r * Mathf.Sin(t + audioTime), r * Mathf.Cos(t + audioTime));
+                
                 //amp = Mathf.Clamp(2 * Mathf.Log(amp, 5) + Random.Range(-0.2f,0.2f), 0f, 5f);
-                amp = 2 * Mathf.Log(amp, 5) + Random.Range(-0.2f,0.2f);
-                float r = 3 + amp * 0.5f;
-                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t), Random.Range(-0.2f,0.2f));
+                amp = 3 * Mathf.Log(amp, 5) * Random.Range(0.9f,1.1f);
+                float r = 4 + amp * 0.5f;
+                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t), 5f + Random.Range(-0.2f,0.2f));
+                //cubes[i].transform.position = new Vector3(r * Mathf.Sin(t + audioTime), r * Mathf.Cos(t + audioTime));
                 cubes[i].transform.localScale = new Vector3(0.2f, amp, 0.2f);
 
                 //Change color
-                Vector3 low = new Vector3(Mathf.Sin(t), Mathf.Cos(t)) * 3f;
-                Vector3 high = new Vector3(Mathf.Sin(t), Mathf.Cos(t)) * 6f;
-                Color color = Color.HSVToRGB(InverseLerp(high, low, cubes[i].transform.position) * 0.17f, 1f, 1f);
+                Vector3 low = new Vector3(Mathf.Sin(t), Mathf.Cos(t)) * 2f;
+                Vector3 high = new Vector3(Mathf.Sin(t), Mathf.Cos(t)) * 8f;
+                Color color = Color.HSVToRGB(InverseLerp(high, low, cubes[i].transform.position) * 0.13f, 1f, 1f);
                 cubes[i].GetComponent<Renderer>().material.color = color;
             }
 
@@ -183,6 +194,12 @@ public class Reactive : MonoBehaviour
         if (currentTime < timeFlags[2] && currentTime > timeFlags[1])
         {
             transition1Time += Time.deltaTime;
+        }
+        else if ((currentTime > timeFlags[2] && currentTime < timeFlags[3]) || (currentTime > timeFlags[4] && currentTime < timeFlags[5]))
+        {
+            float amp = 2 * Mathf.Log(Spectrum.bassAmp * scale * scale, 10) / 3;
+            centerSphere.transform.localScale = Vector3.one * amp;
+            centerSphere.GetComponent<Renderer>().material.color = Color.HSVToRGB(0.17f, Mathf.InverseLerp(1, 2.5f, amp), 1f);
         }
 
     }
