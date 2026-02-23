@@ -312,13 +312,15 @@ GameObject:
   - component: {fileID: 600499336}
   - component: {fileID: 600499335}
   - component: {fileID: 600499334}
+  - component: {fileID: 600499338}
+  - component: {fileID: 600499339}
   m_Layer: 0
   m_Name: 04_AudioReactive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &600499334
 AudioSource:
   m_ObjectHideFlags: 0
@@ -330,7 +332,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: edc300f4a74b4de4aa0a93cdb1d8f0fc, type: 3}
+  m_Resource: {fileID: 8300000, guid: e0555abc4035a4b6e94547c217197703, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -423,7 +425,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 600499333}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb45d316ff4bddc42b81a843d08cef36, type: 3}
   m_Name: 
@@ -435,7 +437,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 600499333}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09557d878fd4d0045b66a07f049a4315, type: 3}
   m_Name: 
@@ -455,6 +457,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 70.55, z: 0}
+--- !u!114 &600499338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600499333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f05ee37a39bb482cae796194642a03a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Reactive
+--- !u!114 &600499339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600499333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74906b7292edd45f4930bc1fd3c45a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Spectrum
+  displayBins: 300
 --- !u!1 &642704525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1071,7 +1098,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: edc300f4a74b4de4aa0a93cdb1d8f0fc, type: 3}
+  m_Resource: {fileID: 8300000, guid: e0555abc4035a4b6e94547c217197703, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -1358,7 +1385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioSpectrumPlotV2
   scale: 10
-  displayBins: 192
+  displayBins: 300
   plotWidth: 16
   rowGap: 2.8
   origin: {x: -8, y: 4, z: 0}
@@ -1403,7 +1430,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: edc300f4a74b4de4aa0a93cdb1d8f0fc, type: 3}
+  m_Resource: {fileID: 8300000, guid: e0555abc4035a4b6e94547c217197703, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
