@@ -9,13 +9,16 @@ public class Reactive : MonoBehaviour
 
     GameObject[] cubes;
     public static int numObjects = 500;
+    public static GameObject mainCamera;
     int segmentCount;
     Vector3[,] startPositions;
 
     Vector3[,] endPositions;
     float[] timeFlags;
     float audioTime = 0f;
-    float transitionTime = 0f;
+    float transition1Time = 0f;
+    bool transtion1 = true;
+    bool segment2 = true;
 
 
     void Start()
@@ -130,20 +133,35 @@ public class Reactive : MonoBehaviour
             //lerp transition
             else if (currentTime < timeFlags[2])
             {
-                cubes[i].transform.position = Vector3.Lerp(startPositions[0,i], endPositions[0,i], transitionTime);
-                cubes[i].transform.localScale = Vector3.one * 0.2f;
+                if(transtion1)
+                {
+                    
+                    transtion1 = false;
+                }
+                cubes[i].transform.position = Vector3.Lerp(startPositions[0,i], endPositions[0,i], transition1Time);
+                cubes[i].transform.localScale = new Vector3(0.2f, amp, 0.2f); 
             }
 
             else if (currentTime < timeFlags[3] || currentTime < timeFlags[5])    //Segment 1 & 3
             {
-                float r = 3f;
+                if (segment2)
+                {
+                    cubes[i].transform.rotation = Quaternion.Euler(0, 0, (float)i / numObjects * -360f);
+                    //cubes[i].transform.Rotate(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
+                    if (i == numObjects - 1) segment2 = false;
+                }
                 //cubes[i].transform.position = new Vector3(r * Mathf.Sin(t + audioTime), r * Mathf.Cos(t + audioTime));
-                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t));
-                //cubes[i].transform.Rotate(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
-                //cubes[i].transform.Rotate(0, 0, (float)i / numObjects * 360f);
-                Color color = Color.HSVToRGB(1f, 1f, 1f);
-                amp = Mathf.Log(amp, 2);
+                //amp = Mathf.Clamp(2 * Mathf.Log(amp, 5) + Random.Range(-0.2f,0.2f), 0f, 5f);
+                amp = 2 * Mathf.Log(amp, 5) + Random.Range(-0.2f,0.2f);
+                float r = 3 + amp * 0.5f;
+                cubes[i].transform.position = new Vector3(r * Mathf.Sin(t), r * Mathf.Cos(t), Random.Range(-0.2f,0.2f));
                 cubes[i].transform.localScale = new Vector3(0.2f, amp, 0.2f);
+
+                //Change color
+                Vector3 low = new Vector3(Mathf.Sin(t), Mathf.Cos(t)) * 3f;
+                Vector3 high = new Vector3(Mathf.Sin(t), Mathf.Cos(t)) * 6f;
+                Color color = Color.HSVToRGB(InverseLerp(high, low, cubes[i].transform.position) * 0.17f, 1f, 1f);
+                cubes[i].GetComponent<Renderer>().material.color = color;
             }
 
             else if (currentTime < timeFlags[4] || currentTime < timeFlags[6])    //Segment 2
@@ -164,8 +182,15 @@ public class Reactive : MonoBehaviour
 
         if (currentTime < timeFlags[2] && currentTime > timeFlags[1])
         {
-            transitionTime += Time.deltaTime;
+            transition1Time += Time.deltaTime;
         }
 
+    }
+
+    public static float InverseLerp(Vector3 a, Vector3 b, Vector3 value)
+    {
+        Vector3 ab = b - a;
+        Vector3 av = value - a;
+        return Mathf.Clamp(Vector3.Dot(av, ab) / Vector3.Dot(ab, ab), 0, 1);
     }
 }
