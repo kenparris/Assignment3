@@ -469,6 +469,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f05ee37a39bb482cae796194642a03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Reactive
+  mainCamera: {fileID: 444587089}
+  song: {fileID: 600499334}
+  skipTime: 0
+  translucentMaterial: {fileID: 2100000, guid: 507c9ddbe7a094652a19077b7132ea01, type: 2}
 --- !u!114 &600499339
 MonoBehaviour:
   m_ObjectHideFlags: 0
