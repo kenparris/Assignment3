@@ -469,6 +469,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f05ee37a39bb482cae796194642a03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Reactive
+  mainCamera: {fileID: 444587089}
+  song: {fileID: 600499334}
+  skipTime: 0
+  translucentMaterial: {fileID: 0}
 --- !u!114 &600499339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,7 +482,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 600499333}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74906b7292edd45f4930bc1fd3c45a32, type: 3}
+  m_Script: {fileID: 11500000, guid: b6b471cce8103c8469709742cfaee3e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spectrum
   displayBins: 300
