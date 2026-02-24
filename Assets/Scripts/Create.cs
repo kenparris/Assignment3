@@ -10,7 +10,7 @@ public class Create : MonoBehaviour
 {
     GameObject[] spheres;
     Vector3[] spheresInitialPositions;
-    static int numSphere = 10; 
+    static int numSphere = 100; 
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +24,7 @@ public class Create : MonoBehaviour
             spheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere); 
             // Initial positions of the spheres. make it in circle with r radius.
             // https://www.cuemath.com/geometry/unit-circle/
-            spheresInitialPositions[i] = new Vector3(r * Mathf.Sin(i * 2 * Mathf.PI / numSphere), r * Mathf.Cos(i * 2 * Mathf.PI / numSphere), 10f);
+            spheresInitialPositions[i] = new Vector3((float)i/10, r * Mathf.Sin(i * 2 * Mathf.PI / numSphere), 10f);//r * Mathf.Cos(i * 2 * Mathf.PI / numSphere)
             spheres[i].transform.position = spheresInitialPositions[i];
 
             // Get the renderer of the spheres and assign colors.
@@ -33,6 +33,14 @@ public class Create : MonoBehaviour
             float hue = (float)i / numSphere; // Hue cycles through 0 to 1
             Color color = Color.HSVToRGB(hue, 1f, 1f); // Full saturation and brightness
             sphereRenderer.material.color = color;
+        }
+    }
+
+    void Update()
+    {
+        for (int i = 0; i < numSphere; i++)
+        {
+            spheres[i].transform.position = new Vector3((float)i/10, 10f * Mathf.Sin(i * 2 * Mathf.PI / numSphere + Time.time), 10f);
         }
     }
 }

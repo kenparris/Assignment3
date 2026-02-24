@@ -333,10 +333,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: e0555abc4035a4b6e94547c217197703, type: 3}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -471,8 +471,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Reactive
   mainCamera: {fileID: 444587089}
   song: {fileID: 600499334}
-  skipTime: 0
-  translucentMaterial: {fileID: 2100000, guid: 8dfe1a1fb8561564da62a5496e76ef77, type: 2}
+  skipTime: 132
+  translucentMaterial: {fileID: 2100000, guid: 507c9ddbe7a094652a19077b7132ea01, type: 2}
   gradient: {fileID: 0}
 --- !u!114 &600499339
 MonoBehaviour:

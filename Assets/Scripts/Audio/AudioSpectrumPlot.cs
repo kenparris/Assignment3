@@ -21,7 +21,7 @@ public class AudioSpectrumPlot : MonoBehaviour
         {   // Create GO and init position
             sampleBin[i] = GameObject.CreatePrimitive(PrimitiveType.Cube);
             sampleBin[i].transform.position = new Vector3(i * 0.01f - 5, 0, 0);
-            sampleBin[i].transform.Rotate(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
+            //sampleBin[i].transform.Rotate(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
         }
     }
     void Update()
@@ -36,9 +36,9 @@ public class AudioSpectrumPlot : MonoBehaviour
                 sampleBin[i].GetComponent<Renderer>().material.color = color;
 
 
-                //sampleBin[i].transform.position = new Vector3(scale * Mathf.Sin((float)i / 100f) + AudioSpectrum.samples[i] * scale * scale, 0, scale * Mathf.Cos((float)i / 100f) + AudioSpectrum.samples[i] * scale * scale);
+                sampleBin[i].transform.position = new Vector3(scale * Mathf.Sin((float)i / 100f) + AudioSpectrum.samples[i] * scale * scale, 0, scale * Mathf.Cos((float)i / 100f) + AudioSpectrum.samples[i] * scale * scale);
                 sampleBin[i].transform.position = new Vector3(2 * ((float)i / 100f) + AudioSpectrum.samples[i], 0, 0);
-                sampleBin[i].transform.Rotate(AudioSpectrum.samples[i], 0f, Mathf.Sin(AudioSpectrum.samples[i]) * AudioSpectrum.samples[i] * scale * scale);
+                //sampleBin[i].transform.Rotate(AudioSpectrum.samples[i], 0f, Mathf.Sin(AudioSpectrum.samples[i]) * AudioSpectrum.samples[i] * scale * scale);
             }
         }
 
